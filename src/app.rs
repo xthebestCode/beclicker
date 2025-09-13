@@ -259,8 +259,9 @@ impl eframe::App for MyApp {
                 ui.separator();
                 ui.add_space(10.0);
                 ui.label(egui::RichText::new("By X_THEBEST_ wine lover puvin")
-                    .color(Color32::from_rgb(150, 150, 170))
-                    .small());
+                    .color(Color32::from_rgb(150, 150, 170)));
+                ui.label(egui::RichText::new("Version 0.4")
+                    .color(Color32::from_rgb(150, 150, 170)));
             });
         });
 

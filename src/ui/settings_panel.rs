@@ -17,7 +17,7 @@ impl SettingsPanel {
         animation_progress: f32,
         listening_for_key: &mut bool,
     ) {
-        ui.heading(RichText::new("⚙️ Настройки").color(Color32::from_rgb(120, 180, 255)));
+        ui.heading(RichText::new("⚙ Настройки").color(Color32::from_rgb(120, 180, 255)));
         ui.separator();
 
         ui.vertical(|ui| {
