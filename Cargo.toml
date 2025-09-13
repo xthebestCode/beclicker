@@ -1,0 +1,16 @@
+[package]
+name = "autoclick"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+windows = { version = "0.62.0", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse"
+] }
+eframe = "0.32.3"
+parking_lot = "0.12.4"
+rdev = "0.5"
+native-windows-gui = "1.0"
+winapi = { version = "0.3", features = ["winuser"] }
