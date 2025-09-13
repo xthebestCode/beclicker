@@ -1,13 +1,13 @@
-use eframe::egui;
-use egui::{Color32, Stroke};
+use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 use parking_lot::RwLock;
-use std::sync::{atomic::{AtomicBool, Ordering}, Arc};
+use eframe::egui;
+use egui::{Color32, RichText, Stroke};
 
 use crate::{
-    clicker::Clicker,
+    window_manager::WindowManager,
     hotkey_manager::HotkeyManager,
-    ui::{settings_panel::SettingsPanel, top_panel::TopPanel, windows_list::WindowsList},
-    window_manager::WindowManager
+    clicker::Clicker,
+    ui::{top_panel::TopPanel, windows_list::WindowsList, settings_panel::SettingsPanel}
 };
 
 pub struct MyApp {
@@ -16,6 +16,8 @@ pub struct MyApp {
     hotkey_vk: Arc<RwLock<u32>>,
     running: Arc<AtomicBool>,
     interval_ms: Arc<RwLock<u64>>,
+    hold_shift: Arc<AtomicBool>,
+    hold_ctrl: Arc<AtomicBool>,
     animation_progress: f32,
     last_update: std::time::Instant,
     listening_for_key: bool,
@@ -34,6 +36,8 @@ impl MyApp {
         let hotkey_vk = Arc::new(RwLock::new(HotkeyManager::vk_for_label("F6")));
         let running = Arc::new(AtomicBool::new(false));
         let interval_ms = Arc::new(RwLock::new(500u64));
+        let hold_shift = Arc::new(AtomicBool::new(false));
+        let hold_ctrl = Arc::new(AtomicBool::new(false));
         let animation_progress = 0.0;
         let last_update = std::time::Instant::now();
         let listening_for_key = false;
@@ -41,7 +45,13 @@ impl MyApp {
 
         // Start background threads
         HotkeyManager::start_hotkey_listener(hotkey_vk.clone(), running.clone());
-        Clicker::start_clicker(running.clone(), selected_hwnd.clone(), interval_ms.clone());
+        Clicker::start_clicker(
+            running.clone(),
+            selected_hwnd.clone(),
+            interval_ms.clone(),
+            hold_shift.clone(),
+            hold_ctrl.clone(),
+        );
 
         Self {
             windows,
@@ -49,6 +59,8 @@ impl MyApp {
             hotkey_vk,
             running,
             interval_ms,
+            hold_shift,
+            hold_ctrl,
             animation_progress,
             last_update,
             listening_for_key,
@@ -117,9 +129,9 @@ impl MyApp {
 
             let is_running = self.running.load(Ordering::SeqCst);
             let (button_text, button_color) = if is_running {
-                ("⏹️ Стоп", Color32::from_rgb(200, 80, 80))
+                ("⏹ Стоп", Color32::from_rgb(200, 80, 80))
             } else {
-                ("▶️ Старт", Color32::from_rgb(0, 180, 100))
+                ("▶ Старт", Color32::from_rgb(0, 180, 100))
             };
 
             if ui.add(egui::Button::new(egui::RichText::new(button_text).color(Color32::WHITE))
@@ -130,6 +142,49 @@ impl MyApp {
                 self.running.store(!is_running, Ordering::SeqCst);
             }
         });
+    }
+
+    fn render_modifier_buttons(&mut self, ui: &mut egui::Ui) {
+        ui.label(RichText::new("Модификаторы:").strong());
+
+        // Кнопка зажатия LShift
+        let is_shift_held = self.hold_shift.load(Ordering::SeqCst);
+        let (shift_text, shift_color) = if is_shift_held {
+            ("🔒 LShift зажат", Color32::from_rgb(0, 180, 100))
+        } else {
+            ("🔓 LShift", Color32::from_rgb(100, 100, 100))
+        };
+
+        if ui.add(egui::Button::new(RichText::new(shift_text).color(Color32::WHITE))
+            .fill(shift_color)
+            .min_size(egui::vec2(120.0, 35.0)))
+            .clicked()
+        {
+            self.hold_shift.store(!is_shift_held, Ordering::SeqCst);
+        }
+
+        ui.add_space(5.0);
+
+        // Кнопка зажатия LCtrl
+        let is_ctrl_held = self.hold_ctrl.load(Ordering::SeqCst);
+        let (ctrl_text, ctrl_color) = if is_ctrl_held {
+            ("🔒 LCtrl зажат", Color32::from_rgb(0, 180, 100))
+        } else {
+            ("🔓 LCtrl", Color32::from_rgb(100, 100, 100))
+        };
+
+        if ui.add(egui::Button::new(RichText::new(ctrl_text).color(Color32::WHITE))
+            .fill(ctrl_color)
+            .min_size(egui::vec2(120.0, 35.0)))
+            .clicked()
+        {
+            self.hold_ctrl.store(!is_ctrl_held, Ordering::SeqCst);
+        }
+
+        ui.add_space(5.0);
+        ui.label(RichText::new("Модификаторы остаются зажатыми постоянно")
+            .color(Color32::from_rgb(150, 150, 170))
+            .small());
     }
 }
 
@@ -188,6 +243,13 @@ impl eframe::App for MyApp {
                         self.animation_progress,
                         &mut self.listening_for_key
                     );
+
+                    ui.add_space(10.0);
+                    ui.separator();
+                    ui.add_space(10.0);
+
+                    // Кнопки модификаторов
+                    self.render_modifier_buttons(ui);
                 });
             });
 
@@ -197,9 +259,8 @@ impl eframe::App for MyApp {
                 ui.separator();
                 ui.add_space(10.0);
                 ui.label(egui::RichText::new("By X_THEBEST_ wine lover puvin")
-                    .color(Color32::from_rgb(150, 150, 170)));
-                ui.label(egui::RichText::new("Version 0.3 Beta")
-                    .color(Color32::from_rgb(150, 150, 170)));
+                    .color(Color32::from_rgb(150, 150, 170))
+                    .small());
             });
         });
 

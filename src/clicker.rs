@@ -1,7 +1,7 @@
 use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 use parking_lot::RwLock;
 use windows::Win32::Foundation::{HWND, LPARAM, WPARAM};
-use windows::Win32::UI::WindowsAndMessaging::{PostMessageW, WM_LBUTTONDOWN, WM_LBUTTONUP};
+use windows::Win32::UI::WindowsAndMessaging::{PostMessageW, WM_KEYDOWN, WM_KEYUP, WM_LBUTTONDOWN, WM_LBUTTONUP};
 
 pub struct Clicker;
 
@@ -10,12 +10,54 @@ impl Clicker {
         running: Arc<AtomicBool>,
         selected_hwnd: Arc<RwLock<Option<isize>>>,
         interval_ms: Arc<RwLock<u64>>,
+        hold_shift: Arc<AtomicBool>,
+        hold_ctrl: Arc<AtomicBool>,
     ) {
         std::thread::spawn(move || {
+            let mut was_shift_held = false;
+            let mut was_ctrl_held = false;
+
             loop {
                 if running.load(Ordering::SeqCst) {
                     if let Some(hwnd_val) = *selected_hwnd.read() {
                         let hwnd = HWND(hwnd_val as *mut _);
+
+                        let hold_shift_val = hold_shift.load(Ordering::SeqCst);
+                        let hold_ctrl_val = hold_ctrl.load(Ordering::SeqCst);
+
+                        // Управление Shift - зажать/отпустить при изменении состояния
+                        if hold_shift_val != was_shift_held {
+                            if hold_shift_val {
+                                // Зажимаем LSHIFT (0xA0)
+                                unsafe {
+                                    PostMessageW(Some(hwnd), WM_KEYDOWN, WPARAM(0xA0 as usize), LPARAM(0x002A0001)).ok();
+                                }
+                            } else {
+                                // Отпускаем LSHIFT
+                                unsafe {
+                                    PostMessageW(Some(hwnd), WM_KEYUP, WPARAM(0xA0 as usize), LPARAM(0xC02A0001)).ok();
+                                }
+                            }
+                            was_shift_held = hold_shift_val;
+                        }
+
+                        // Управление Ctrl - зажать/отпустить при изменении состояния
+                        if hold_ctrl_val != was_ctrl_held {
+                            if hold_ctrl_val {
+                                // Зажимаем LCTRL (0xA2)
+                                unsafe {
+                                    PostMessageW(Some(hwnd), WM_KEYDOWN, WPARAM(0xA2 as usize), LPARAM(0x001D0001)).ok();
+                                }
+                            } else {
+                                // Отпускаем LCTRL
+                                unsafe {
+                                    PostMessageW(Some(hwnd), WM_KEYUP, WPARAM(0xA2 as usize), LPARAM(0xC01D0001)).ok();
+                                }
+                            }
+                            was_ctrl_held = hold_ctrl_val;
+                        }
+
+                        // Левый клик
                         unsafe {
                             PostMessageW(Some(hwnd), WM_LBUTTONDOWN, WPARAM(1), LPARAM(0)).ok();
                             PostMessageW(Some(hwnd), WM_LBUTTONUP, WPARAM(0), LPARAM(0)).ok();
@@ -24,6 +66,27 @@ impl Clicker {
                     let ms = *interval_ms.read();
                     std::thread::sleep(std::time::Duration::from_millis(ms));
                 } else {
+                    // При остановке отпускаем все модификаторы
+                    if was_shift_held {
+                        if let Some(hwnd_val) = *selected_hwnd.read() {
+                            let hwnd = HWND(hwnd_val as *mut _);
+                            unsafe {
+                                PostMessageW(Some(hwnd), WM_KEYUP, WPARAM(0xA0 as usize), LPARAM(0xC02A0001)).ok();
+                            }
+                        }
+                        was_shift_held = false;
+                    }
+
+                    if was_ctrl_held {
+                        if let Some(hwnd_val) = *selected_hwnd.read() {
+                            let hwnd = HWND(hwnd_val as *mut _);
+                            unsafe {
+                                PostMessageW(Some(hwnd), WM_KEYUP, WPARAM(0xA2 as usize), LPARAM(0xC01D0001)).ok();
+                            }
+                        }
+                        was_ctrl_held = false;
+                    }
+
                     std::thread::sleep(std::time::Duration::from_millis(60));
                 }
             }

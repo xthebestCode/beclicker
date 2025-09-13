@@ -17,7 +17,7 @@ impl SettingsPanel {
         animation_progress: f32,
         listening_for_key: &mut bool,
     ) {
-        ui.heading(RichText::new("⚙ Настройки").color(Color32::from_rgb(120, 180, 255)));
+        ui.heading(RichText::new("⚙️ Настройки").color(Color32::from_rgb(120, 180, 255)));
         ui.separator();
 
         ui.vertical(|ui| {
@@ -94,13 +94,13 @@ impl SettingsPanel {
                 );
                 ui.add_space(16.0);
 
-                ui.label(RichText::new(if is_running { " АКТИВНО" } else { " ПАУЗА" })
+                ui.label(RichText::new(if is_running { "АКТИВНО" } else { "ПАУЗА" })
                     .color(pulse_color)
                     .strong());
             });
 
             ui.add_space(5.0);
-            ui.label(RichText::new("Клик идет в выбранное окно.")
+            ui.label(RichText::new("Клик идет в выбранное окно (оно не должно быть свернуто)")
                 .color(Color32::from_rgb(150, 150, 170))
                 .small());
         });
