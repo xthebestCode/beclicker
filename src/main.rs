@@ -1,4 +1,4 @@
-#![windows_subsystem = "windows"]
+// #![windows_subsystem = "windows"]
 mod app;
 mod window_manager;
 mod hotkey_manager;
@@ -14,7 +14,7 @@ fn main() -> eframe::Result<()> {
     };
 
     eframe::run_native(
-        "🚀 Be_Clicker",
+        "🚀 Be Clicker",
         options,
         Box::new(|_| Ok(Box::new(MyApp::new())))
     )

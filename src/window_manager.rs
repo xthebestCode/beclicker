@@ -5,7 +5,6 @@ use windows::Win32::UI::WindowsAndMessaging::{EnumWindows, GetWindowTextW, IsWin
 pub struct WindowManager;
 
 impl WindowManager {
-    /// Callback для EnumWindows — заполняет Vec<(title, hwnd_as_isize)>
     unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
         unsafe {
             if IsWindowVisible(hwnd).as_bool() {
@@ -21,7 +20,6 @@ impl WindowManager {
         BOOL(1)
     }
 
-    /// Возвращает список видимых окон как (title, hwnd_as_isize)
     pub fn get_windows_list() -> Vec<(String, isize)> {
         let mut list: Vec<(String, isize)> = Vec::new();
         unsafe {

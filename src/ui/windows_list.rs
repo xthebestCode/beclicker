@@ -28,7 +28,6 @@ impl WindowsList {
         windows: &[(String, isize)],
         selected_hwnd: &Arc<RwLock<Option<isize>>>,
     ) {
-        // Dropdown header
         let response = ui.add(egui::Button::new(
             egui::RichText::new(if self.show_windows_list { "📋Список Окон:" } else { "📋Список Окон ▶" })
                 .color(Color32::from_rgb(120, 180, 255))
@@ -39,7 +38,6 @@ impl WindowsList {
             self.show_windows_list = !self.show_windows_list;
         }
 
-        // Animated dropdown content
         if self.windows_list_animation > 0.01 {
             ui.separator();
 
@@ -80,7 +78,6 @@ impl WindowsList {
             });
         }
 
-        // Show selected window
         if let Some(hwnd) = *selected_hwnd.read() {
             if let Some((title, _)) = windows.iter().find(|(_, h)| *h == hwnd) {
                 ui.add_space(5.0 * self.windows_list_animation);

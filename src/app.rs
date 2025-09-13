@@ -43,7 +43,6 @@ impl MyApp {
         let listening_for_key = false;
         let last_key_press = None;
 
-        // Start background threads
         HotkeyManager::start_hotkey_listener(hotkey_vk.clone(), running.clone());
         Clicker::start_clicker(
             running.clone(),
@@ -66,7 +65,6 @@ impl MyApp {
             listening_for_key,
             last_key_press,
 
-            // Initialize UI components
             top_panel: TopPanel,
             windows_list: WindowsList::new(),
             settings_panel: SettingsPanel,
@@ -80,7 +78,6 @@ impl MyApp {
             self.animation_progress = 0.0;
         }
 
-        // Update windows list animation
         self.windows_list.update_animation(delta_time, self.windows_list.show_windows_list);
     }
 
@@ -147,7 +144,6 @@ impl MyApp {
     fn render_modifier_buttons(&mut self, ui: &mut egui::Ui) {
         ui.label(RichText::new("Модификаторы:").strong());
 
-        // Кнопка зажатия LShift
         let is_shift_held = self.hold_shift.load(Ordering::SeqCst);
         let (shift_text, shift_color) = if is_shift_held {
             ("🔒 LShift зажат", Color32::from_rgb(0, 180, 100))
@@ -258,9 +254,9 @@ impl eframe::App for MyApp {
                 ui.add_space(20.0);
                 ui.separator();
                 ui.add_space(10.0);
-                ui.label(egui::RichText::new("By X_THEBEST_ wine lover puvin")
+                ui.label(RichText::new("By @faworitewine wine lover puvin")
                     .color(Color32::from_rgb(150, 150, 170)));
-                ui.label(egui::RichText::new("Version 0.4")
+                ui.label(RichText::new("Version 0.4")
                     .color(Color32::from_rgb(150, 150, 170)));
             });
         });

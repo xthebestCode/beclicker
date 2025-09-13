@@ -17,7 +17,7 @@ impl TopPanel {
         animation_progress: f32,
     ) {
         ui.horizontal_centered(|ui| {
-            ui.heading(RichText::new("🚀 Be_Cliker").color(Color32::from_rgb(120, 180, 255)));
+            ui.heading(RichText::new("🚀 Be clicker").color(Color32::from_rgb(120, 180, 255)));
             ui.separator();
 
             let is_running = running.load(Ordering::SeqCst);

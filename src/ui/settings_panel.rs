@@ -23,7 +23,6 @@ impl SettingsPanel {
         ui.vertical(|ui| {
             ui.label(RichText::new("Горячая клавиша:").strong());
 
-            // Custom key binding
             ui.horizontal(|ui| {
                 let current_key = HotkeyManager::vk_to_key_name(*hotkey_vk.read());
                 let button_text = if *listening_for_key {
@@ -71,7 +70,6 @@ impl SettingsPanel {
             ui.separator();
             ui.add_space(10.0);
 
-            // Status info with animation
             let is_running = running.load(Ordering::SeqCst);
             ui.label(RichText::new("Статус:").strong());
             ui.horizontal(|ui| {

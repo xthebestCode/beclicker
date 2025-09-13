@@ -5,7 +5,6 @@ use windows::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState;
 pub struct HotkeyManager;
 
 impl HotkeyManager {
-    /// Вспомогательная таблица: метка -> виртуальный key code (VK)
     pub fn vk_for_label(label: &str) -> u32 {
         match label {
             "F6" => 0x75,
@@ -16,23 +15,6 @@ impl HotkeyManager {
             "R" => 0x52,
             "PgDn" => 0x22,
             _ => 0x75,
-        }
-    }
-
-    pub const VK_LSHIFT: u32 = 0xA0;
-    pub const VK_RSHIFT: u32 = 0xA1;
-    pub const VK_SHIFT: u32 = 0x10;
-
-    pub fn label_for_vk(vk: u32) -> String {
-        match vk {
-            0x75 => "F6".to_string(),
-            0x76 => "F7".to_string(),
-            0x77 => "F8".to_string(),
-            0x78 => "F9".to_string(),
-            0x79 => "F10".to_string(),
-            0x52 => "R".to_string(),
-            0x22 => "PgDn".to_string(),
-            other => format!("VK_{:#X}", other),
         }
     }
 
