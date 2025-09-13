@@ -1,7 +1,7 @@
 use eframe::egui;
 use egui::Color32;
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 use parking_lot::RwLock;
+use std::sync::Arc;
 
 pub struct WindowsList {
     pub show_windows_list: bool,

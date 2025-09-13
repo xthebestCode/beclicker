@@ -1,3 +1,4 @@
+#![windows_subsystem = "windows"]
 mod app;
 mod window_manager;
 mod hotkey_manager;

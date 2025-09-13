@@ -19,6 +19,10 @@ impl HotkeyManager {
         }
     }
 
+    pub const VK_LSHIFT: u32 = 0xA0;
+    pub const VK_RSHIFT: u32 = 0xA1;
+    pub const VK_SHIFT: u32 = 0x10;
+
     pub fn label_for_vk(vk: u32) -> String {
         match vk {
             0x75 => "F6".to_string(),

@@ -14,3 +14,15 @@ parking_lot = "0.12.4"
 rdev = "0.5"
 native-windows-gui = "1.0"
 winapi = { version = "0.3", features = ["winuser"] }
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser"] }
+
+[profile.release]
+lto = true
+opt-level = "z"
+strip = true
+panic = "abort"
+
+[target.'cfg(windows)'.package.metadata]
+windows-subsystem = "windows"

@@ -1,14 +1,13 @@
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
-use parking_lot::RwLock;
 use eframe::egui;
-use eframe::egui::TextStyle;
 use egui::{Color32, Stroke};
+use parking_lot::RwLock;
+use std::sync::{atomic::{AtomicBool, Ordering}, Arc};
 
 use crate::{
-    window_manager::WindowManager,
-    hotkey_manager::HotkeyManager,
     clicker::Clicker,
-    ui::{top_panel::TopPanel, windows_list::WindowsList, settings_panel::SettingsPanel}
+    hotkey_manager::HotkeyManager,
+    ui::{settings_panel::SettingsPanel, top_panel::TopPanel, windows_list::WindowsList},
+    window_manager::WindowManager
 };
 
 pub struct MyApp {
