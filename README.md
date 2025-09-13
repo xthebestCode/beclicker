@@ -55,6 +55,7 @@ Keep browsing, coding, or playing another game while AutoClicker Pro does the cl
 **Requirements**
 - Windows 10/11
 - [Rust](https://www.rust-lang.org/)
+- [download]https://github.com/xthebestCode/beclicker/releases/tag/autoclicker
 
 ---
 **Other**
